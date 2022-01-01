@@ -10,14 +10,19 @@ using namespace std;
 /*======================================
 ==> PROGRAM OVERVIEW (TOP).
 
-    1- Main Lobby.  Function      [Y].
-    2- Add New      Function      [N].
-    3- Edit         Function      [N].
-    4- Delete       Function      [N].
-    5- View List    Function      [N].
-    5- Exit         Function      [N].
+  0- Main Lobby.  Function      [Y].
+|  ---------------------------------- |
+|  1- Add New      Function      [Y]. |
+|  2- Edit         Function      [N]. |
+|  3- Delete       Function      [N]. |
+|  4- View List    Function      [Y]. |
+|  5- Exit         Function      [Y]. |
+---------------------------------------
 
 ==> FUNCTIONS ALGORITHMS:
+1-
+2-
+3-
 
 */
 //======================================
@@ -33,7 +38,7 @@ using namespace std;
 //#pragma pack(1)
 typedef struct
 {
-    uint32_t ID;      // 32-bit U[0-255].
+    string ID;
     uint32_t Budget; // 32-bit U[0-4294967296].
 
     uint8_t Registered_Subjects[MIN_MAX_REGISTERED_SUBJECTS];
@@ -73,7 +78,7 @@ void Coolest_SubjectsINIT(void)   // TheCoolestMalak[ARRAY_OF_STRUCTS].
 
 } // END Coolest_SubjectsINIT.
 
-
+// Variable to count the real time students.
 uint8_t LINEAR_STUDENTS_COUNTER = 0;
 /************************************************
 *                FUNCTION DECLARED              *
@@ -83,29 +88,17 @@ void Coolest_Switcher(char );
 void Coolest_SubjectsINIT(void);
 void Coolest_New_Students(void);
 void Coolest_Subject_Switcher(char );
-void Coolest_SREH(void);
+void Coolest_StudentsLIST(void);
+
 //======================================
 int main(void)
 {
-    uint8_t counter = 0;
-
     system("COLOR 0D");
+
     Coolest_SubjectsINIT();
+
     Coolest_Main_Lobby();
 
-    // TESTING PURPOSE ONLY:
-    system("cls");
-    printf("\n Student[%d]_ID: %d", LINEAR_STUDENTS_COUNTER, Coolest_Students[0].ID);
-    printf("\n Student[%d]_Budget: %d", LINEAR_STUDENTS_COUNTER, Coolest_Students[0].Budget);
-    printf("\n Student[%d]_SubjectCounter: %d", LINEAR_STUDENTS_COUNTER, Coolest_Students[0].Subjects_Counter);
-
-    printf("\n \nRegistered Subjects: \n");
-
-    while(Coolest_Students[0].Registered_Subjects[counter] != '\0')
-    {
-        printf("\n Subject[%d]: %d",counter, Coolest_Students[0].Registered_Subjects[counter]);
-        counter += 1;
-    }
 
 
     cout << endl;
@@ -120,7 +113,11 @@ int main(void)
 // MAIN LOBBY FUNCTION:
 void Coolest_Main_Lobby(void)
 {
-    char Coolest_User_Input;
+  char Coolest_User_Input;
+
+  while(1)
+  {
+    system("cls");
 
     cout <<"\t\tRegistration of students in college" << endl;
     cout <<"\n1. Students registered in system.";
@@ -133,151 +130,257 @@ void Coolest_Main_Lobby(void)
     cin >> Coolest_User_Input; // taking the input (user choice).
 
     Coolest_Switcher(Coolest_User_Input);
+  }
 
 }// END MAIN_LOBBY.
 
 // ADD NEW STUDENT
 void Coolest_New_Students(void)
 {
-    system("cls");
+  system("cls");
 
-    //uint8_t  Student_ID     = 0; // U[0-255]
-    //uint16_t Student_Budget = 0; // U[0-65563]
-    char
-        Coolest_Switcher,
-        Coolest_Descision;
+  //uint8_t  Student_ID     = 0; // U[0-255]
+  //uint16_t Student_Budget = 0; // U[0-65563]
 
-    cout <<"\n Please enter id for a new student: ";
-    cin  >> Coolest_Students[LINEAR_STUDENTS_COUNTER].ID ;
-    cout <<"\n Please Enter available money: ";
-    cin  >> Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget;
+  char  Coolest_Switcher;
+  char  Coolest_Descision;
 
-    /*Hash Mechanism for storing the data (DATA-STRUCTURE). */
+  char ADD_STATE;
 
-    //Student[LINEAR_STUDENTS_COUNTER].ID     = Student_ID;
-    //Student[LINEAR_STUDENTS_COUNTER].Budget = Student_Budget;
-
-    // Picking
-    cout << "\n The available subjectS: "        << endl;
-    cout << "\n1) Programming Languagues \t\t\t" << Programming_Languages.Fees << "Fees"<< endl;
-    cout << "\n2) Technical Writing  \t\t\t"     << Technical_Writing.Fees     << "Fees"<< endl;
-    cout << "\n3) Software Engineering \t\t\t"   << Software_Engineering.Fees  << "Fees"<< endl;
-    cout << "\n4) Database \t\t\t"               << Database.Fees              << "Fees"<< endl;
-
-    // Conditional loop.
     while(1)
     {
-        cout << "\n Please choose subject number to enroll in: ";
-        cin  >> Coolest_Switcher;
+      system("cls");
 
-        // Subject picker BACKEND PROCESS.
-        Coolest_Subject_Switcher(Coolest_Switcher);
+      cout <<"\n Please enter id for a new student: ";
+      cin  >> Coolest_Students[LINEAR_STUDENTS_COUNTER].ID ;
+      cout <<"\n Please Enter available money: ";
+      cin  >> Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget;
 
-        cout << "\n Do you want to enroll in another subject Y/N: ";
-        cin  >> Coolest_Descision;
+      /*Hash Mechanism for storing the data (DATA-STRUCTURE). */
+
+      //Student[LINEAR_STUDENTS_COUNTER].ID     = Student_ID;
+      //Student[LINEAR_STUDENTS_COUNTER].Budget = Student_Budget;
+
+      // Picking
+      cout << "\n The available subjectS: "    << endl;
+      cout << "\n1) Programming Languagues \t" << Programming_Languages.Fees << "Fees" << endl;
+      cout << "\n2) Technical Writing  \t"     << Technical_Writing.Fees     << "Fees" << endl;
+      cout << "\n3) Software Engineering \t"   << Software_Engineering.Fees  << "Fees" << endl;
+      cout << "\n4) Database \t"               << Database.Fees              << "Fees" << endl;
+
+      // Conditional loop.
+      while(1)
+      {
+          cout << "\n Please choose subject number to enroll in: ";
+          cin  >> Coolest_Switcher;
+
+          // Subject picker BACKEND PROCESS.
+          Coolest_Subject_Switcher(Coolest_Switcher);
+
+          cout << "\n Do you want to enroll in another subject Y/N: ";
+          cin  >> Coolest_Descision;
 
 
-        if( (Coolest_Descision == 'Y') || (Coolest_Descision == 'y') )
-        {
-            continue; // SKIP.
-        }
+          if( (Coolest_Descision == 'Y') || (Coolest_Descision == 'y') )
+          {
+              continue; // SKIP.
+          }
 
-        else if( (Coolest_Descision == 'N') || (Coolest_Descision == 'n') )
-        {
+          else if( (Coolest_Descision == 'N') || (Coolest_Descision == 'n') )
+          {
             break; // BREAK THE LOOP.
-        }
+          }
 
-    } //end while.
+      } //end while.
 
-    // Increasing sutdents number after registering 1.
-    LINEAR_STUDENTS_COUNTER += 1;
+      // Increasing sutdents number after registering 1.
+      LINEAR_STUDENTS_COUNTER += 1;
 
+      // Checking if user want to add more sturents at a time.
+      cout << "\n Add new student?(Y/N): ";
+      cin  >> ADD_STATE;
+
+      if(ADD_STATE == 'Y' || ADD_STATE == 'y') {continue;}
+      else if(ADD_STATE == 'N' || ADD_STATE == 'n') {break;}
+      else {continue;}
+  }//end while.
 }// END Coolest_New_Students.
+
+
+// FUNCTION TO VIEW THE RESGITERED STUDENTS:
+
+// User friendly coding
+#define STUDENTS Coolest_Students[temp_counter]
+
+void Coolest_StudentsLIST(void)
+{
+  uint8_t temp_counter = 0;
+  char temp;
+
+  while(1)
+  {
+    system("cls");
+
+    printf("\n Number of students registered: %d\n", LINEAR_STUDENTS_COUNTER);
+
+    while(temp_counter < LINEAR_STUDENTS_COUNTER)
+    {
+      cout << "\n Student_ID: "       << STUDENTS.ID               << endl;
+      cout << "\n Student_BUDGET: "   << STUDENTS.Budget           << endl;
+      cout << "\n Student_SUBJECTS: " << STUDENTS.Subjects_Counter << endl;
+      printf("\n=========================================================");
+
+      temp_counter += 1;
+    }//end while 2.
+
+    printf("\n \nBack to main lobby(Y/N): ");
+    cin >> temp;
+
+    if(temp == 'Y' || temp == 'y') {break;}
+    else if(temp == 'N' || temp == 'n') {continue;}
+    else {continue;}
+  }//end while 1.
+}//END Coolest_StudentsLIST
 
 /************************************************
 *                SUB FUNCTIONS                  *
 ************************************************/
 
 // SUBJECT SWITCHER FUNCTION:
+
+/*
+  Algorithm:
+  1- Pick the Subject.ID
+  2- Detect if the student budget allows him to add the subject.
+  3- If(YES): ADD=> Minus its fees from his budget , ADD subject id into his subjects.
+  4- If(NO): ERROR=> SKIP.
+*/
+
+// User Friendly Coding
+#define STUDENT_SUBJCOUNT     Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter
+#define STUDENT_REGISTERDSUBJ Coolest_Students[LINEAR_STUDENTS_COUNTER].Registered_Subjects[STUDENT_SUBJCOUNT]
+
 void Coolest_Subject_Switcher(char Coolest_Choice)
 {
-    Coolest_SREH();
-
+  // SUBJECT REGISTER ERROR HANDLER:
+  if(1)
+  {
     switch(Coolest_Choice)
     {
         // Programming Languages.
         case '1':
             {
-
+              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES:
+              if(Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget >= Programming_Languages.Fees)
+              {
                 Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Programming_Languages.Fees;
 
-
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Registered_Subjects[Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter]     =               Programming_Languages.ID;
+                STUDENT_REGISTERDSUBJ = Programming_Languages.ID;
 
                 Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
                 break;
-            }
+              }
+              else
+              {
+                printf("\n ERROR#code[0x1F]: (Budget < Fees) \n");
+                break;
+              }
+            }//end case_1.
 
         // Technical Writing.
         case '2':
             {
+              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES:
+              if(Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget >= Technical_Writing.Fees)
+              {
                 Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Technical_Writing.Fees;
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Registered_Subjects[Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter]     =               Technical_Writing.ID;
+                STUDENT_REGISTERDSUBJ = Technical_Writing.ID;
 
                 Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
                 break;
-            }
+              }
+              else
+              {
+                printf("\n ERROR#code[0x1F]: (Budget < Fees) \n");
+                break;
+              }
+            }//end case_2.
+
         // Software Engineering.
         case '3':
             {
+              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES:
+              if(Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget >= Software_Engineering.Fees)
+              {
                 Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Software_Engineering.Fees;
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Registered_Subjects[Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter]     =               Software_Engineering.ID;
+                STUDENT_REGISTERDSUBJ = Software_Engineering.ID;
 
                 Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
-
                 break;
-            }
+              }
+              else
+              {
+                printf("\n ERROR#code[0x1F]: (Budget < Fees) \n");
+                break;
+              }
+            }//end case_3.
 
         // Database
         case '4':
             {
+              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES:
+              if(Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget >= Database.Fees)
+              {
                 Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Database.Fees;
-
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Registered_Subjects[Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter]     =               Database.ID;
+                STUDENT_REGISTERDSUBJ = Database.ID;
 
                 Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
-
                 break;
-            }
+              }
+              else
+              {
+                printf("\n ERROR#code[0x1F]: (Budget < Fees) \n");
+                break;
+              }
+            }//end case_4.
 
-        default: /*do nothing*/ break;
+        default: {printf("\n Error Input\n"); break;}
 
     }//end switch.
+  }//end if.
 
+  else
+  {
+    printf("\n ERROR!");
+  }
 } // END Coolest_Subject_Switcher.
 
-// SUBJECT REGISTER ERROR HANDLER:
-void Coolest_SREH(void)
+// FUNCTION FOR USER FRIENDLY CODING:
+void Coolest_SubjectsDecoder(void)
 {
 
-}
+}// END Coolest_SubjectsDecoder
 
 // LOBBY SWITCHER FUNCTION:
 void Coolest_Switcher(char Coolest_Choice)
 {
+
     switch(Coolest_Choice)
     {
-        case '1':
+        case '1': // View students registered.
         {
+          system("cls");
+          Coolest_StudentsLIST();
 
-            break;
+          break;
         }
 
-        case '2':
+        case '2': // Add new student.
         {
-            Coolest_New_Students();
+          system("cls");
+          Coolest_New_Students();
 
-            break;
+          break;
         }
 
         case '3':
@@ -293,8 +396,10 @@ void Coolest_Switcher(char Coolest_Choice)
         }
         case '5':
         {
-
-            break;
+          system("cls");
+          printf("\n Thank you for using. \n");
+          exit(0);
+          break;
         }
         case '6':
         {
