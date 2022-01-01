@@ -1,9 +1,6 @@
 #include <iostream>
 #include <string.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <windows.h>
-#include <conio.h> // AKA pinocchio!
+#include <unistd.h>
 
 using namespace std;
 
@@ -18,6 +15,7 @@ using namespace std;
 |  4- View List    Function      [Y]. |
 |  5- Exit         Function      [Y]. |
 ---------------------------------------
+-SUB: ERROR HANDLING [Y].
 
 ==> FUNCTIONS ALGORITHMS:
 1-
@@ -142,24 +140,37 @@ void Coolest_New_Students(void)
   //uint8_t  Student_ID     = 0; // U[0-255]
   //uint16_t Student_Budget = 0; // U[0-65563]
 
-  char  Coolest_Switcher;
-  char  Coolest_Descision;
+  char
+    Coolest_Switcher,
+    Coolest_Descision;
 
   char ADD_STATE;
+  bool Student_Exist = false;
 
-    while(1)
+  while(1)
+  {
+    system("cls");
+
+    cout <<"\n Please enter id for a new student: ";
+    cin  >> Coolest_Students[LINEAR_STUDENTS_COUNTER].ID ;
+
+    // Check if the entered ID already exist using function compare
+    // compare() is class function used to compare string with other string.
+    for(uint8_t i = 0; i < LINEAR_STUDENTS_COUNTER; i++)
     {
-      system("cls");
+      if(((Coolest_Students[LINEAR_STUDENTS_COUNTER].ID).compare(Coolest_Students[i].ID)) == 0)
+      {
+        // If student ID already exist:
+        Student_Exist = true;
+        break;
+      }
+    }
 
-      cout <<"\n Please enter id for a new student: ";
-      cin  >> Coolest_Students[LINEAR_STUDENTS_COUNTER].ID ;
+    if(Student_Exist == false)
+    {
+      // If passed get the money
       cout <<"\n Please Enter available money: ";
       cin  >> Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget;
-
-      /*Hash Mechanism for storing the data (DATA-STRUCTURE). */
-
-      //Student[LINEAR_STUDENTS_COUNTER].ID     = Student_ID;
-      //Student[LINEAR_STUDENTS_COUNTER].Budget = Student_Budget;
 
       // Picking
       cout << "\n The available subjectS: "    << endl;
@@ -200,9 +211,19 @@ void Coolest_New_Students(void)
       cout << "\n Add new student?(Y/N): ";
       cin  >> ADD_STATE;
 
-      if(ADD_STATE == 'Y' || ADD_STATE == 'y') {continue;}
+      // Restarting the Exist variable.
+      if(ADD_STATE == 'Y' || ADD_STATE == 'y') {Student_Exist = false; continue;}
       else if(ADD_STATE == 'N' || ADD_STATE == 'n') {break;}
       else {continue;}
+    }// end if.
+
+    else
+    {
+      Student_Exist = false;
+      printf("\n Student ID exists. Please try another one.\n");
+      // Delay the Screen for 1 seconds then restart.
+      sleep(1);
+    }
   }//end while.
 }// END Coolest_New_Students.
 
@@ -225,9 +246,9 @@ void Coolest_StudentsLIST(void)
 
     while(temp_counter < LINEAR_STUDENTS_COUNTER)
     {
-      cout << "\n Student_ID: "       << STUDENTS.ID               << endl;
-      cout << "\n Student_BUDGET: "   << STUDENTS.Budget           << endl;
-      cout << "\n Student_SUBJECTS: " << STUDENTS.Subjects_Counter << endl;
+      cout << "\n Student_ID: "       <<       STUDENTS.ID               << endl;
+      cout << "\n Student_BUDGET: "   << (int) STUDENTS.Budget           << endl;
+      cout << "\n Student_SUBJECTS: " << (int) STUDENTS.Subjects_Counter << endl;
       printf("\n=========================================================");
 
       temp_counter += 1;
@@ -257,12 +278,14 @@ void Coolest_StudentsLIST(void)
 */
 
 // User Friendly Coding
-#define STUDENT_SUBJCOUNT     Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter
-#define STUDENT_REGISTERDSUBJ Coolest_Students[LINEAR_STUDENTS_COUNTER].Registered_Subjects[STUDENT_SUBJCOUNT]
+#define STUDENT_N             Coolest_Students[LINEAR_STUDENTS_COUNTER]
+#define STUDENT_SUBJCOUNT     STUDENT_N.Subjects_Counter
+#define STUDENT_REGISTERDSUBJ STUDENT_N.Registered_Subjects[STUDENT_SUBJCOUNT]
 
 void Coolest_Subject_Switcher(char Coolest_Choice)
 {
-  // SUBJECT REGISTER ERROR HANDLER:
+  bool Subject_Exist = false;
+
   if(1)
   {
     switch(Coolest_Choice)
@@ -270,19 +293,43 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
         // Programming Languages.
         case '1':
             {
-              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES:
+              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES: ERROR_PHASE[1]
               if(Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget >= Programming_Languages.Fees)
               {
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Programming_Languages.Fees;
+                // CHECKING IF THE SUBJECT[x].ID EXISTS IN STUDENT[x].REGISTERED_SUBJECTS[x]: ERROR_PHASE[2]
+                // LINEAR SEARCH ALGORITHM:
+                for(uint8_t i = 0; i < STUDENT_SUBJCOUNT; i++)
+                {
+                  if(Programming_Languages.ID == STUDENT_N.Registered_Subjects[i])
+                  {
+                    // Subject already registered:
+                    Subject_Exist = true;
+                    break;
+                  }
+                }
+                // IF Subject first time
+                if(Subject_Exist == false)
+                {
+                  Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Programming_Languages.Fees;
 
-                STUDENT_REGISTERDSUBJ = Programming_Languages.ID;
+                  STUDENT_REGISTERDSUBJ = Programming_Languages.ID;
 
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
-                break;
-              }
+                  Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
+
+                  Subject_Exist = false;
+
+                  break;
+                }
+              }//end big if.
               else
               {
-                printf("\n ERROR#code[0x1F]: (Budget < Fees) \n");
+                printf("\n ERROR#code[0x1F]: (Budget < Fees). \n");
+
+                if(Subject_Exist)
+                {
+                  printf("\n ERROR#code[0x2F]: Subject already registered. \n");
+                  break;
+                }
                 break;
               }
             }//end case_1.
@@ -290,18 +337,43 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
         // Technical Writing.
         case '2':
             {
-              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES:
+              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES: ERROR_PHASE[1]
               if(Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget >= Technical_Writing.Fees)
               {
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Technical_Writing.Fees;
-                STUDENT_REGISTERDSUBJ = Technical_Writing.ID;
+                // CHECKING IF THE SUBJECT[x].ID EXISTS IN STUDENT[x].REGISTERED_SUBJECTS[x]: ERROR_PHASE[2]
+                // LINEAR SEARCH ALGORITHM:
+                for(uint8_t i = 0; i < STUDENT_SUBJCOUNT; i++)
+                {
+                  if(Technical_Writing.ID == STUDENT_N.Registered_Subjects[i])
+                  {
+                    // Subject already registered:
+                    Subject_Exist = true;
+                    break;
+                  }
+                }
+                // IF Subject already
+                if(Subject_Exist == false)
+                {
+                  Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Technical_Writing.Fees;
 
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
-                break;
-              }
+                  STUDENT_REGISTERDSUBJ = Technical_Writing.ID;
+
+                  Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
+
+                  Subject_Exist = false;
+
+                  break;
+                }
+              }//end big if.
               else
               {
-                printf("\n ERROR#code[0x1F]: (Budget < Fees) \n");
+                printf("\n ERROR#code[0x1F]: (Budget < Fees). \n");
+
+                if(Subject_Exist)
+                {
+                  printf("\n ERROR#code[0x2F]: Subject already registered. \n");
+                  break;
+                }
                 break;
               }
             }//end case_2.
@@ -309,18 +381,43 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
         // Software Engineering.
         case '3':
             {
-              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES:
+              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES: ERROR_PHASE[1]
               if(Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget >= Software_Engineering.Fees)
               {
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Software_Engineering.Fees;
-                STUDENT_REGISTERDSUBJ = Software_Engineering.ID;
+                // CHECKING IF THE SUBJECT[x].ID EXISTS IN STUDENT[x].REGISTERED_SUBJECTS[x]: ERROR_PHASE[2]
+                // LINEAR SEARCH ALGORITHM:
+                for(uint8_t i = 0; i < STUDENT_SUBJCOUNT; i++)
+                {
+                  if(Software_Engineering.ID == STUDENT_N.Registered_Subjects[i])
+                  {
+                    // Subject already registered:
+                    Subject_Exist = true;
+                    break;
+                  }
+                }
+                // IF Subject already
+                if(Subject_Exist == false)
+                {
+                  Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Software_Engineering.Fees;
 
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
-                break;
-              }
+                  STUDENT_REGISTERDSUBJ = Software_Engineering.ID;
+
+                  Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
+
+                  Subject_Exist = false;
+
+                  break;
+                }
+              }//end big if.
               else
               {
-                printf("\n ERROR#code[0x1F]: (Budget < Fees) \n");
+                printf("\n ERROR#code[0x1F]: (Budget < Fees). \n");
+
+                if(Subject_Exist)
+                {
+                  printf("\n ERROR#code[0x2F]: Subject already registered. \n");
+                  break;
+                }
                 break;
               }
             }//end case_3.
@@ -328,18 +425,43 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
         // Database
         case '4':
             {
-              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES:
+              // CHECKING IF STUDENT[x].BUDGET > SUBJECT[x].FEES: ERROR_PHASE[1]
               if(Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget >= Database.Fees)
               {
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Database.Fees;
-                STUDENT_REGISTERDSUBJ = Database.ID;
+                // CHECKING IF THE SUBJECT[x].ID EXISTS IN STUDENT[x].REGISTERED_SUBJECTS[x]: ERROR_PHASE[2]
+                // LINEAR SEARCH ALGORITHM:
+                for(uint8_t i = 0; i < STUDENT_SUBJCOUNT; i++)
+                {
+                  if(Database.ID == STUDENT_N.Registered_Subjects[i])
+                  {
+                    // Subject already registered:
+                    Subject_Exist = true;
+                    break;
+                  }
+                }
+                // IF Subject already
+                if(Subject_Exist == false)
+                {
+                  Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget -= Database.Fees;
 
-                Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
-                break;
-              }
+                  STUDENT_REGISTERDSUBJ = Database.ID;
+
+                  Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
+
+                  Subject_Exist = false;
+
+                  break;
+                }
+              }//end big if.
               else
               {
-                printf("\n ERROR#code[0x1F]: (Budget < Fees) \n");
+                printf("\n ERROR#code[0x1F]: (Budget < Fees). \n");
+
+                if(Subject_Exist)
+                {
+                  printf("\n ERROR#code[0x2F]: Subject already registered. \n");
+                  break;
+                }
                 break;
               }
             }//end case_4.
