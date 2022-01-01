@@ -88,6 +88,7 @@ void Coolest_New_Students(void);
 void Coolest_Subject_Switcher(char );
 void Coolest_StudentsLIST(void);
 void Coolest_Delete_Student(void);
+void Coolest_Edit_Student(void);
 string Coolest_SubjectsDecoder(uint8_t );
 //======================================
 int main(void)
@@ -136,11 +137,6 @@ void Coolest_Main_Lobby(void)
 // ADD NEW STUDENT
 void Coolest_New_Students(void)
 {
-  system("cls");
-
-  //uint8_t  Student_ID     = 0; // U[0-255]
-  //uint16_t Student_Budget = 0; // U[0-65563]
-
   char
     Coolest_Switcher,
     Coolest_Descision;
@@ -152,8 +148,11 @@ void Coolest_New_Students(void)
   {
     system("cls");
 
+    cout << "\t\t Add a new student." << endl;
     cout <<"\n Please enter id for a new student: ";
-    cin  >> Coolest_Students[LINEAR_STUDENTS_COUNTER].ID ;
+    cin  >> Coolest_Students[LINEAR_STUDENTS_COUNTER].ID;
+
+    if(Coolest_Students[LINEAR_STUDENTS_COUNTER].ID == "exit") {break;}
 
     // Check if the entered ID already exist using function compare
     // compare() is class function used to compare string with other string.
@@ -174,7 +173,7 @@ void Coolest_New_Students(void)
       cin  >> Coolest_Students[LINEAR_STUDENTS_COUNTER].Budget;
 
       // Picking
-      cout << "\n The available subjectS: "    << endl;
+      cout << "\n The available subjects: "    << endl;
       cout << "\n1) Programming Languagues \t" << Programming_Languages.Fees << "Fees" << endl;
       cout << "\n2) Technical Writing  \t"     << Technical_Writing.Fees     << "Fees" << endl;
       cout << "\n3) Software Engineering \t"   << Software_Engineering.Fees  << "Fees" << endl;
@@ -213,7 +212,7 @@ void Coolest_New_Students(void)
       cin  >> ADD_STATE;
 
       // Restarting the Exist variable.
-      if(ADD_STATE == 'Y' || ADD_STATE == 'y') {Student_Exist = false; continue;}
+      if(ADD_STATE == 'Y' || ADD_STATE == 'y') {Student_Exist = false;}
       else if(ADD_STATE == 'N' || ADD_STATE == 'n') {break;}
       else {continue;}
     }// end if.
@@ -270,15 +269,155 @@ void Coolest_StudentsLIST(void)
       temp_counter += 1;
     }//end while 2.
 
-    printf("\n \nBack to main lobby(Y/N): ");
+    printf("\n \nBack to main lobby Y/N: ");
     cin >> temp;
 
     if(temp == 'Y' || temp == 'y') {break;}
-    else if(temp == 'N' || temp == 'n') {continue;}
     else {continue;}
   }//end while 1.
 }//END Coolest_StudentsLIST
 
+// FUNCTION FOR EDITING EXISTING STUDENT:
+#define STUDENT_SC Coolest_Students[ID_DB].Subjects_Counter
+#define STUDENT_SR Coolest_Students[ID_DB].Registered_Subjects[STUDENT_SC]
+
+void Coolest_Edit_Student(void)
+{
+  string Student_ID;
+  bool ID_Exist = false;
+  bool Subject_Exist = false;
+  uint32_t ID_DB = 0;
+  char ADD_STATE;
+  char EDIT_STATE;
+  uint8_t Subject_ID;
+
+  while(1)
+  {
+    system("cls");
+
+    cout << "\t \t Edit Student" << endl;
+
+    cout << "\n Please enter id for a student to edit: ";
+    cin >> Student_ID;
+
+    if(Student_ID == "exit") {break;}
+
+    // First check if the id exist:
+    for(uint8_t i = 0; i < LINEAR_STUDENTS_COUNTER; i++)
+    {
+      // Linear Search for the id.
+      if((Student_ID.compare(Coolest_Students[i].ID)) == 0)
+      {
+        ID_Exist = true;
+        // Get the DATA_ID for this student for accessing it later.
+        ID_DB = i;
+        break;
+      }
+    }//end for.
+
+    // Editing Mechanism:
+    if(ID_Exist == true)
+    {
+      cout << "\n Please Enter your student new available money: ";
+      cin >> Coolest_Students[ID_DB].Budget;
+
+      cout << "\n \nThe choosen subjects are: ";
+
+      for(uint8_t i = 0; (i < STUDENT_SC); i++)
+      {
+        cout << (string) Coolest_SubjectsDecoder(Coolest_Students[ID_DB].Registered_Subjects[i]) << ", ";
+      }
+      cout << "\b\b.";
+
+      cout << "\n \nThe available subjects: "   << endl;
+      cout << "\n1) Programming Languagues \t" << Programming_Languages.Fees << "Fees" << endl;
+      cout << "\n2) Technical Writing  \t"     << Technical_Writing.Fees     << "Fees" << endl;
+      cout << "\n3) Software Engineering \t"   << Software_Engineering.Fees  << "Fees" << endl;
+      cout << "\n4) Database \t"               << Database.Fees              << "Fees" << endl;
+
+      // Editing request:
+      cout << "\n Do you want to edit them Y/N: ";
+      cin  >> EDIT_STATE;
+
+      if((EDIT_STATE == 'Y' || EDIT_STATE == 'y'))
+      {
+        while(1)
+        {
+          cout << "\n Please choose subject number to enroll in: ";
+          cin  >> Subject_ID;
+
+          // Checking for subject exsist
+          for(uint8_t i = 0; (i < Coolest_Students[ID_DB].Subjects_Counter); i++)
+          {
+            if(Subject_ID == Coolest_Students[ID_DB].Registered_Subjects[i])
+            {
+              Subject_Exist = true;
+              break;
+            }
+          }//end for.
+
+          if(Subject_Exist == true)
+          {
+            cout << "\n Error this subject is already enrolled in." << endl;
+            sleep(1);
+          }
+
+          else if(Subject_Exist == false)
+          {
+            // Checking if the new student budget allows him to add the subject
+            if(Coolest_Students[ID_DB].Budget >= Subjects[Subject_ID].Fees)
+            {
+              Coolest_Students[ID_DB].Budget -= Subjects[Subject_ID].Fees;
+              STUDENT_SC += 1;
+              STUDENT_SR = Subjects[Subject_ID].ID;
+            }
+
+            else
+            {
+              cout << "\n Error your fees is less than the total fees of subjects you want to enroll in." << endl;
+              break;
+            }
+          }
+
+          // Checking if user want to add more sturents at a time.
+          cout << "\n Do you want to enroll in another subject Y/N: ";
+          cin  >> ADD_STATE;
+
+          // Restarting the Exist variable.
+          if(ADD_STATE == 'Y' || ADD_STATE == 'y') {Subject_Exist = false;}
+          else if(ADD_STATE == 'N' || ADD_STATE == 'n') {break;}
+          else {continue;}
+        }//end while.
+      }//end if.
+
+      else if((EDIT_STATE == 'N' || EDIT_STATE == 'n'))
+      {
+        break;
+      }
+
+      else
+      {
+        continue;
+      }
+    }// end if id exist.
+
+    else if(ID_Exist == false)
+    {
+      cout << "\n Error the student id doesn't exists." << endl;
+      sleep(1);
+      continue;
+    }
+    else
+    {
+      cout << "\n Invalid input!" << endl;
+      continue;
+    }
+
+    break;
+  }//end while.
+}// END Coolest_Edit_Student.
+
+// FUNCTION FOR DELETING A STUDENT:
 void Coolest_Delete_Student(void)
 {
   string Student_ID;
@@ -291,7 +430,6 @@ void Coolest_Delete_Student(void)
     system("cls");
 
     cout << "\t \t Delete Student" << endl;
-    cout << "\t \t write exit for exit." << endl;
 
     cout << "\n Please enter id for a student to delete: ";
     cin >> Student_ID;
@@ -342,6 +480,8 @@ void Coolest_Delete_Student(void)
     }
   }//end while.
 }// END Coolest_Delete_Student.
+
+
 /************************************************
 *                SUB FUNCTIONS                  *
 ************************************************/
@@ -395,18 +535,16 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
 
                   Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
 
-                  Subject_Exist = false;
-
                   break;
                 }
               }//end big if.
               else
               {
-                printf("\n ERROR#code[0x1F]: (Budget < Fees). \n");
+                printf("\n Error your fees is less than the total fees of subjects you want to enroll in. \n");
 
                 if(Subject_Exist)
                 {
-                  printf("\n ERROR#code[0x2F]: Subject already registered. \n");
+                  printf("\n Error this subject is already enrolled in. \n");
                   break;
                 }
                 break;
@@ -439,18 +577,16 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
 
                   Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
 
-                  Subject_Exist = false;
-
                   break;
                 }
               }//end big if.
               else
               {
-                printf("\n ERROR#code[0x1F]: (Budget < Fees). \n");
+                printf("\n Error your fees is less than the total fees of subjects you want to enroll in. \n");
 
                 if(Subject_Exist)
                 {
-                  printf("\n ERROR#code[0x2F]: Subject already registered. \n");
+                  printf("\n Error this subject is already enrolled in. \n");
                   break;
                 }
                 break;
@@ -483,18 +619,16 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
 
                   Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
 
-                  Subject_Exist = false;
-
                   break;
                 }
               }//end big if.
               else
               {
-                printf("\n ERROR#code[0x1F]: (Budget < Fees). \n");
+                printf("\n Error your fees is less than the total fees of subjects you want to enroll in. \n");
 
                 if(Subject_Exist)
                 {
-                  printf("\n ERROR#code[0x2F]: Subject already registered. \n");
+                  printf("\n Error this subject is already enrolled in. \n");
                   break;
                 }
                 break;
@@ -527,18 +661,16 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
 
                   Coolest_Students[LINEAR_STUDENTS_COUNTER].Subjects_Counter += 1;
 
-                  Subject_Exist = false;
-
                   break;
                 }
               }//end big if.
               else
               {
-                printf("\n ERROR#code[0x1F]: (Budget < Fees). \n");
+                printf("\n Error your fees is less than the total fees of subjects you want to enroll in. \n");
 
                 if(Subject_Exist)
                 {
-                  printf("\n ERROR#code[0x2F]: Subject already registered. \n");
+                  printf("\n Error this subject is already enrolled in. \n");
                   break;
                 }
                 break;
@@ -548,12 +680,15 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
         default: {printf("\n Error Input\n"); break;}
 
     }//end switch.
+
   }//end if.
 
   else
   {
     printf("\n ERROR!");
   }
+  
+  Subject_Exist = false;
 } // END Coolest_Subject_Switcher.
 
 string Coolest_SubjectsDecoder(uint8_t subject_id)
@@ -593,8 +728,9 @@ void Coolest_Switcher(char Coolest_Choice)
 
         case '3':
         {
-
-            break;
+          system("cls");
+          Coolest_Edit_Student();
+          break;
         }
 
          case '4':
@@ -610,13 +746,7 @@ void Coolest_Switcher(char Coolest_Choice)
           exit(0);
           break;
         }
-        case '6':
-        {
-
-            break;
-        }
 
         default: break;
-
     }
 } // END CoolestSwitcher.
