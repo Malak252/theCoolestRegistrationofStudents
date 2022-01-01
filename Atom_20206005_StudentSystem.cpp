@@ -87,7 +87,7 @@ void Coolest_SubjectsINIT(void);
 void Coolest_New_Students(void);
 void Coolest_Subject_Switcher(char );
 void Coolest_StudentsLIST(void);
-
+string Coolest_SubjectsDecoder(uint8_t );
 //======================================
 int main(void)
 {
@@ -232,10 +232,12 @@ void Coolest_New_Students(void)
 
 // User friendly coding
 #define STUDENTS Coolest_Students[temp_counter]
+#define REG_SUBJ STUDENTS.Registered_Subjects[temp2_counter]
 
 void Coolest_StudentsLIST(void)
 {
-  uint8_t temp_counter = 0;
+  int temp_counter  = 0;
+  int temp2_counter = 0;
   char temp;
 
   while(1)
@@ -246,11 +248,24 @@ void Coolest_StudentsLIST(void)
 
     while(temp_counter < LINEAR_STUDENTS_COUNTER)
     {
-      cout << "\n Student_ID: "       <<       STUDENTS.ID               << endl;
-      cout << "\n Student_BUDGET: "   << (int) STUDENTS.Budget           << endl;
-      cout << "\n Student_SUBJECTS: " << (int) STUDENTS.Subjects_Counter << endl;
-      printf("\n=========================================================");
+      //cout << "\n Student_ID: "       <<       STUDENTS.ID               << endl;
+      //cout << "\n Student_BUDGET: "   << (int) STUDENTS.Budget           << endl;
+      //cout << "\n Student_SUBJECTS: " << (int) STUDENTS.Subjects_Counter << endl;
 
+      cout << "\n";
+      cout << temp_counter << ") Id=" << STUDENTS.ID << ",and subjects enrolled in are(";
+
+      // Printing the student[x] subject registered:
+      while(temp2_counter < STUDENTS.Subjects_Counter)
+      {
+        cout << (string)Coolest_SubjectsDecoder(REG_SUBJ) << ", ";
+        temp2_counter += 1;
+      }
+      // (\b\b) to delete the space and comma after the last registered subject.
+      cout << "\b\b)";
+
+      cout << "\n";
+      temp2_counter = 0;
       temp_counter += 1;
     }//end while 2.
 
@@ -477,10 +492,17 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
   }
 } // END Coolest_Subject_Switcher.
 
-// FUNCTION FOR USER FRIENDLY CODING:
-void Coolest_SubjectsDecoder(void)
+string Coolest_SubjectsDecoder(uint8_t subject_id)
 {
+  // Subject Decoded ID:
+  string SDI[MIN_MAX_SUBJECTS+1];
 
+  SDI[1] = "Programming Languages";
+  SDI[2] = "Technical Writing";
+  SDI[3] = "Software Enginnering";
+  SDI[4] = "Database";
+
+  return SDI[subject_id];
 }// END Coolest_SubjectsDecoder
 
 // LOBBY SWITCHER FUNCTION:
