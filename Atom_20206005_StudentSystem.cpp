@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string.h>
+#include <windows.h>
 #include <unistd.h>
 
 using namespace std;
@@ -90,6 +91,8 @@ void Coolest_StudentsLIST(void);
 void Coolest_Delete_Student(void);
 void Coolest_Edit_Student(void);
 string Coolest_SubjectsDecoder(uint8_t );
+
+uint8_t Coolest_Temp(uint8_t );
 //======================================
 int main(void)
 {
@@ -98,8 +101,6 @@ int main(void)
     Coolest_SubjectsINIT();
 
     Coolest_Main_Lobby();
-
-
 
     cout << endl;
     return 0;
@@ -329,14 +330,14 @@ void Coolest_Edit_Student(void)
       }
       cout << "\b\b.";
 
-      cout << "\n \nThe available subjects: "   << endl;
+      cout << "\n \nThe available subjects: "  << endl;
       cout << "\n1) Programming Languagues \t" << Programming_Languages.Fees << "Fees" << endl;
       cout << "\n2) Technical Writing  \t"     << Technical_Writing.Fees     << "Fees" << endl;
       cout << "\n3) Software Engineering \t"   << Software_Engineering.Fees  << "Fees" << endl;
       cout << "\n4) Database \t"               << Database.Fees              << "Fees" << endl;
 
       // Editing request:
-      cout << "\n Do you want to edit them Y/N: ";
+      cout << "\n \nDo you want to edit them Y/N: ";
       cin  >> EDIT_STATE;
 
       if((EDIT_STATE == 'Y' || EDIT_STATE == 'y'))
@@ -360,6 +361,7 @@ void Coolest_Edit_Student(void)
           {
             cout << "\n Error this subject is already enrolled in." << endl;
             sleep(1);
+            continue;
           }
 
           else if(Subject_Exist == false)
@@ -367,9 +369,9 @@ void Coolest_Edit_Student(void)
             // Checking if the new student budget allows him to add the subject
             if(Coolest_Students[ID_DB].Budget >= Subjects[Subject_ID].Fees)
             {
-              Coolest_Students[ID_DB].Budget -= Subjects[Subject_ID].Fees;
               STUDENT_SC += 1;
-              STUDENT_SR = Subjects[Subject_ID].ID;
+              STUDENT_SR = Subjects[Coolest_Temp(Subject_ID)].ID;
+              Coolest_Students[ID_DB].Budget -= Subjects[Coolest_Temp(Subject_ID)].ID;
             }
 
             else
@@ -415,6 +417,8 @@ void Coolest_Edit_Student(void)
 
     break;
   }//end while.
+
+  ID_Exist = false;
 }// END Coolest_Edit_Student.
 
 // FUNCTION FOR DELETING A STUDENT:
@@ -687,7 +691,7 @@ void Coolest_Subject_Switcher(char Coolest_Choice)
   {
     printf("\n ERROR!");
   }
-  
+
   Subject_Exist = false;
 } // END Coolest_Subject_Switcher.
 
@@ -750,3 +754,9 @@ void Coolest_Switcher(char Coolest_Choice)
         default: break;
     }
 } // END CoolestSwitcher.
+
+// Temporary function.
+uint8_t Coolest_Temp(uint8_t id)
+{
+  return (id-1);
+}
